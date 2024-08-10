@@ -1,21 +1,38 @@
 import { useEffect, useState } from 'react';
 import logo from './assets/images/logo-universal.png';
 import './App.css';
-import { CurrentSong } from "../wailsjs/go/main/App";
+import { ChangeState, CurrentSong, OpenApp } from "../wailsjs/go/main/App";
 
 type Metadata = { [key: string]: string }
 
 function App() {
+    const [appStatus, setAppStatus] = useState<boolean | undefined>();
+    const [status, setStatus] = useState<boolean | undefined>();
     const [metadata, setMetadata] = useState<Metadata>();
     const [posBar, setPosBar] = useState<number>()
-    const updateResultText = (result: Metadata) => setMetadata(result);
+
+    const openSpotify = async () => {
+        await OpenApp();
+    }
+
+    const changeState = async () => {
+        await ChangeState();
+        setStatus(!status)
+    }
 
 
     const fetchCurrentSong = async () => {
         try {
             const result = await CurrentSong();
-            updateResultText(result);
-            setPosBar((parseFloat(result["position"]) / parseFloat(result["length"])) * 100)
+            setMetadata(result)
+            console.log(result)
+            setStatus(result["status"] === "Playing")
+            if (result["appStatus"] === "closed") {
+                setAppStatus(false)
+            } else {
+                setAppStatus(true)
+                setPosBar((parseFloat(result["position"]) / parseFloat(result["length"])) * 100)
+            }
         } catch (error) {
             console.error("Error fetching current song:", error);
         }
@@ -29,13 +46,29 @@ function App() {
 
     console.log(posBar)
 
-    return metadata ? (
+    return appStatus === true && metadata ? (
         <div id="App" className='App'>
-            <img src={metadata ? metadata["albumCover"] : logo} id="logo" alt="logo" />
-            <div id="title" className="title">{metadata["title"]}</div>
-            <div className='status'><span>{metadata["positionF"]}</span><div className='bar'><div className='innerBar' style={{ width: `${posBar}%` }}></div></div><span>{metadata["lengthF"]}</span></div>
+            <div className='artContainer'>
+
+                <img src={metadata ? metadata["albumCover"] : logo} id="art" alt="album cover" />
+                <div className='controls'>
+                    <button className='playback' onClick={changeState}>{status ? "V" : "D"}</button>
+                </div>
+            </div>
+            <div className='bot'>
+                <div id="title" className="title">{metadata["title"]}</div>
+                <div className='status'>
+                    <div className='bar'>
+                        <div className='innerBar' style={{ width: `${posBar}%` }}></div>
+                    </div>
+                    <div className='position'>
+                        <span>{metadata["positionF"]}</span>
+                        <span>{metadata["lengthF"]}</span>
+                    </div>
+                </div>
+            </div>
         </div>
-    ) : null
+    ) : appStatus === false ? (<div className='App'><button className='openButton' onClick={() => openSpotify()}>Open Spotify</button></div>) : null
 }
 
 export default App

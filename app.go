@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"math"
+	"os/exec"
 	"strconv"
 	"strings"
 
@@ -44,19 +45,28 @@ func (a *App) CurrentSong() map[string]string {
 	obj := conn.Object(spotifyService, spotifyPath)
 
 	variant, err := obj.GetProperty("org.mpris.MediaPlayer2.Player.Metadata")
+
+	xdd := map[string]string{
+		"status": "closed",
+	}
+
 	if err != nil {
-		log.Fatalf("Failed to get metadata: %v", err)
+		return xdd
 	}
 
 	metadata := variant.Value().(map[string]dbus.Variant)
 
 	pos, err := obj.GetProperty("org.mpris.MediaPlayer2.Player.Position")
+
+	statusV, _ := obj.GetProperty("org.mpris.MediaPlayer2.Player.PlaybackStatus")
+
 	if err != nil {
 		log.Fatalf("Failed to get Position: %v", err)
 	}
 
 	albumCover := strings.Trim(metadata["mpris:artUrl"].String(), `"'`)
 	artist := metadata["xesam:artist"].Value().([]string)
+	status := strings.Trim(statusV.String(), `"`)
 	title := strings.Trim(metadata["xesam:title"].String(), `"`)
 	album := strings.Trim(metadata["xesam:album"].String(), `"`)
 	length := stringToFloat(metadata["mpris:length"].String(), "@t ")
@@ -64,7 +74,42 @@ func (a *App) CurrentSong() map[string]string {
 	position := stringToFloat(pos.String(), "@x ")
 	positionF := timeParse(pos.String(), "@x ")
 
-	return map[string]string{"artist": artist[0], "albumCover": albumCover, "title": title, "album": album, "length": strconv.FormatFloat(length, 'f', 2, 32), "lengthF": lengthF, "position": strconv.FormatFloat(position, 'f', 2, 32), "positionF": positionF}
+	xdd = map[string]string{
+		"appStatus":  "opened",
+		"status":     status,
+		"artist":     artist[0],
+		"albumCover": albumCover,
+		"title":      title,
+		"album":      album,
+		"length":     strconv.FormatFloat(length, 'f', 2, 32),
+		"lengthF":    lengthF,
+		"position":   strconv.FormatFloat(position, 'f', 2, 32),
+		"positionF":  positionF,
+	}
+
+	return xdd
+}
+
+func (a *App) OpenApp() bool {
+	cmd := exec.Command("spotify-launcher")
+
+	cmd.Start()
+
+	return true
+}
+
+func (a *App) ChangeState() {
+	conn, err := dbus.SessionBus()
+	if err != nil {
+		log.Fatalf("Failed to connect to session bus: %v", err)
+	}
+
+	spotifyService := "org.mpris.MediaPlayer2.spotify"
+	spotifyPath := dbus.ObjectPath("/org/mpris/MediaPlayer2")
+
+	obj := conn.Object(spotifyService, spotifyPath)
+
+	obj.Call("org.mpris.MediaPlayer2.Player.PlayPause", 0)
 }
 
 func stringToFloat(float string, cut string) float64 {
