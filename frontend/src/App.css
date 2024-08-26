@@ -24,7 +24,8 @@
 }
 
 .artContainer:hover>#art {
-    filter: blur(3px);
+   filter: blur(2px);
+   transform: scale(1.004)
 }
 
 .artContainer:hover>.controls {
@@ -34,6 +35,8 @@
 }
 
 .controls {
+    display: flex;
+    gap:10px;
     z-index: 100;
     display: none;
     width: 100%;
@@ -53,10 +56,14 @@
 
 .title {
     text-align: start;
+    overflow: hidden;
+    text-overflow: ellipsis;
     height: 20px;
     font-size: 18px;
     font-weight: bold;
     line-height: 20px;
+    display: inline-block;
+    width: fit-content;
 }
 
 .status {
@@ -96,7 +103,22 @@
     font-weight: 600;
     color: black;
     border-radius: 2px;
-
     appearance: none;
     background-color: #069c68;
+}
+
+
+.playback {
+    all:unset;
+    display: flex;
+    align-items:center;
+    justify-content:center;
+    padding: 5px;
+    width: 10%;
+    height: 10%;
+    border-radius:50px;
+    border: 1px solid white;
+    background-color: white;
+    color:black;
+    font-size:2rem;
 }

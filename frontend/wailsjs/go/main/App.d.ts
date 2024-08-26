@@ -7,4 +7,10 @@ export function CurrentSong():Promise<{[key: string]: string}>;
 
 export function Greet(arg1:string):Promise<string>;
 
+export function NextSong():Promise<void>;
+
 export function OpenApp():Promise<boolean>;
+
+export function PrevSong():Promise<void>;
+
+export function Seek(arg1:number,arg2:string):Promise<void>;

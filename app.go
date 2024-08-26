@@ -66,11 +66,13 @@ func (a *App) CurrentSong() map[string]string {
 
 	albumCover := strings.Trim(metadata["mpris:artUrl"].String(), `"'`)
 	artist := metadata["xesam:artist"].Value().([]string)
+	trackId := metadata["mpris:trackid"].String()
 	status := strings.Trim(statusV.String(), `"`)
 	title := strings.Trim(metadata["xesam:title"].String(), `"`)
 	album := strings.Trim(metadata["xesam:album"].String(), `"`)
 	length := stringToFloat(metadata["mpris:length"].String(), "@t ")
 	lengthF := timeParse(metadata["mpris:length"].String(), "@t ")
+	lengthR := strings.Trim(metadata["mpris:length"].String(), "@t ")
 	position := stringToFloat(pos.String(), "@x ")
 	positionF := timeParse(pos.String(), "@x ")
 
@@ -83,8 +85,10 @@ func (a *App) CurrentSong() map[string]string {
 		"album":      album,
 		"length":     strconv.FormatFloat(length, 'f', 2, 32),
 		"lengthF":    lengthF,
+		"lengthR":    lengthR,
 		"position":   strconv.FormatFloat(position, 'f', 2, 32),
 		"positionF":  positionF,
+		"trackId":    trackId,
 	}
 
 	return xdd
@@ -110,6 +114,57 @@ func (a *App) ChangeState() {
 	obj := conn.Object(spotifyService, spotifyPath)
 
 	obj.Call("org.mpris.MediaPlayer2.Player.PlayPause", 0)
+}
+
+func (a *App) PrevSong() {
+	conn, err := dbus.SessionBus()
+	if err != nil {
+		log.Fatalf("Failed to connect to session bus: %v", err)
+	}
+
+	spotifyService := "org.mpris.MediaPlayer2.spotify"
+	spotifyPath := dbus.ObjectPath("/org/mpris/MediaPlayer2")
+
+	obj := conn.Object(spotifyService, spotifyPath)
+
+	obj.Call("org.mpris.MediaPlayer2.Player.Previous", 0)
+}
+
+func (a *App) NextSong() {
+	conn, err := dbus.SessionBus()
+	if err != nil {
+		log.Fatalf("Failed to connect to session bus: %v", err)
+	}
+
+	spotifyService := "org.mpris.MediaPlayer2.spotify"
+	spotifyPath := dbus.ObjectPath("/org/mpris/MediaPlayer2")
+
+	obj := conn.Object(spotifyService, spotifyPath)
+
+	obj.Call("org.mpris.MediaPlayer2.Player.Next", 0)
+}
+
+func (a *App) Seek(seekPosition int, trackId string) {
+	conn, err := dbus.SessionBus()
+	if err != nil {
+		log.Fatalf("Failed to connect to session bus: %v", err)
+	}
+
+	// Define the Spotify service and object path
+	spotifyService := "org.mpris.MediaPlayer2.spotify"
+	playerPath := dbus.ObjectPath("/org/mpris/MediaPlayer2")
+
+	// Get the D-Bus object for the Spotify player
+	obj := conn.Object(spotifyService, playerPath)
+
+	// Call the SetPosition method
+	trackId = strings.Trim(trackId, "\"")
+	err = obj.Call("org.mpris.MediaPlayer2.Player.SetPosition", 0, dbus.ObjectPath(trackId), int64(seekPosition)).Err
+	if err != nil {
+		log.Printf("Failed to call SetPosition: %v", err)
+	} else {
+		log.Println("Seek position set successfully")
+	}
 }
 
 func stringToFloat(float string, cut string) float64 {

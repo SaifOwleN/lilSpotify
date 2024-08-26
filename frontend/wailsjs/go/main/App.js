@@ -14,6 +14,18 @@ export function Greet(arg1) {
   return window['go']['main']['App']['Greet'](arg1);
 }
 
+export function NextSong() {
+  return window['go']['main']['App']['NextSong']();
+}
+
 export function OpenApp() {
   return window['go']['main']['App']['OpenApp']();
+}
+
+export function PrevSong() {
+  return window['go']['main']['App']['PrevSong']();
+}
+
+export function Seek(arg1, arg2) {
+  return window['go']['main']['App']['Seek'](arg1, arg2);
 }
