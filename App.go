@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"lilSpotify/spotApi"
 	"log"
 	"math"
 	"os/exec"
@@ -33,7 +34,32 @@ func (a *App) Greet(name string) string {
 	return fmt.Sprintf("Hello %s, It's show time!", name)
 }
 
+type Config struct {
+	Method       string
+	AccessToken  string
+	RefreshToken string
+}
+
+var Method string
+
+func (a *App) Init(method string) string {
+	config := Config{}
+	config.Method = method
+
+	if method == "api" {
+		token := spotApi.Connect(a.ctx)
+		config.AccessToken = token
+	}
+
+}
+
 func (a *App) CurrentSong() map[string]string {
+
+	if Method == "api" {
+
+	} else {
+
+	}
 	conn, err := dbus.SessionBus()
 	if err != nil {
 		log.Fatalf("Failed to connect to session bus: %v", err)

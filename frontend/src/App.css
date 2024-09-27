@@ -9,6 +9,19 @@
     padding-bottom: 4px;
 }
 
+.home{
+	display:flex;
+	height:100vh;
+	flex-direction:column;
+	justify-content:center;
+	align-items:center;
+	gap:10px
+}
+
+.home button {
+	width:170px
+}
+
 .artContainer {
     display: flex;
     max-width: 84%;
@@ -89,6 +102,10 @@
     background-color: white;
 }
 
+.innerBar:hover {
+	background-color: #231c2f;
+}
+
 .position {
     width: 100%;
     display: flex;
@@ -122,3 +139,5 @@
     color:black;
     font-size:2rem;
 }
+
+

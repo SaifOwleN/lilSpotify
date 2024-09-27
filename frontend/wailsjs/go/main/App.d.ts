@@ -7,6 +7,8 @@ export function CurrentSong():Promise<{[key: string]: string}>;
 
 export function Greet(arg1:string):Promise<string>;
 
+export function Init(arg1:string):Promise<void>;
+
 export function NextSong():Promise<void>;
 
 export function OpenApp():Promise<boolean>;

@@ -12,12 +12,13 @@ import (
 var assets embed.FS
 
 func main() {
+
 	// Create an instance of the app structure
 	app := NewApp()
 
 	// Create application with options
 	err := wails.Run(&options.App{
-		Title:  "lilPlayer",
+		Title:  "lilSpotify",
 		Width:  1024 / 4,
 		Height: 300,
 		AssetServer: &assetserver.Options{
@@ -28,6 +29,7 @@ func main() {
 			app,
 		},
 	})
+
 	if err != nil {
 		println("Error:", err.Error())
 	}
