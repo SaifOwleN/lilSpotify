@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Init } from '../wailsjs/go/main/App';
+import { Init } from '../wailsjs/go/App/App.js';
 import './App.css';
 import Player from './player';
 

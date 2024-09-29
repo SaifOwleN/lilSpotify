@@ -1,9 +1,9 @@
-package main
+package App
 
 import (
 	"context"
 	"fmt"
-	"lilSpotify/spotApi"
+	"lilSpotify/backend/spotApi"
 	"log"
 	"math"
 	"os/exec"
@@ -13,50 +13,41 @@ import (
 	"github.com/godbus/dbus"
 )
 
-// App struct
 type App struct {
 	ctx context.Context
 }
 
-// NewApp creates a new App application struct
 func NewApp() *App {
 	return &App{}
 }
 
-// startup is called when the app starts. The context is saved
-// so we can call the runtime methods
-func (a *App) startup(ctx context.Context) {
+func (a *App) Startup(ctx context.Context) {
 	a.ctx = ctx
 }
 
-// Greet returns a greeting for the given name
 func (a *App) Greet(name string) string {
 	return fmt.Sprintf("Hello %s, It's show time!", name)
 }
 
-type Config struct {
-	Method       string
-	AccessToken  string
-	RefreshToken string
-}
-
 var Method string
 
-func (a *App) Init(method string) string {
-	config := Config{}
-	config.Method = method
+var api spotApi.SpotApi
+
+func (a *App) Init(method string) bool {
 
 	if method == "api" {
-		token := spotApi.Connect(a.ctx)
-		config.AccessToken = token
+		api.Config = spotApi.Connect(a.ctx)
 	}
-
+	fmt.Printf("lmaoConfig %+v", api)
+	api.CurrentSong(api.AccessToken)
+	return true
 }
 
-func (a *App) CurrentSong() map[string]string {
+func (a *App) CurrentSong() interface{} {
 
 	if Method == "api" {
-
+		xdd := api.CurrentSong(api.AccessToken)
+		return xdd
 	} else {
 
 	}

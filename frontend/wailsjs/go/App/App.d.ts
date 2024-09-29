@@ -3,11 +3,11 @@
 
 export function ChangeState():Promise<void>;
 
-export function CurrentSong():Promise<{[key: string]: string}>;
+export function CurrentSong():Promise<any>;
 
 export function Greet(arg1:string):Promise<string>;
 
-export function Init(arg1:string):Promise<void>;
+export function Init(arg1:string):Promise<boolean>;
 
 export function NextSong():Promise<void>;
 

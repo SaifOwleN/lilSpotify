@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import logo from './assets/images/logo-universal.png';
 import { IoPauseOutline, IoPlayOutline, IoPlaySkipBackOutline, IoPlaySkipForwardOutline } from "react-icons/io5"
-import { ChangeState, CurrentSong, NextSong, OpenApp, PrevSong, Seek } from "../wailsjs/go/main/App"
+import { ChangeState, CurrentSong, NextSong, OpenApp, PrevSong, Seek } from "../wailsjs/go/App/App.js"
 
 type appStatus = "opened" | "closed"
 type playbackStatus = "Paused" | "Playing"
